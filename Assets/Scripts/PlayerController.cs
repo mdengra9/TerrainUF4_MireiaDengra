@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     private Animator _animator;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         _controller = GetComponent<CharacterController>();
         _camera = Camera.main.transform;
@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetButton("Fire2"))
         {
-            AiMovement();
+            AimMovement();
         }
         else
         {
@@ -58,6 +58,9 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 direction = new Vector3(_horizontal, 0, _vertical);
 
+        _animator.SetFloat("VelX", 0);
+        _animator.SetFloat("VelY", direction.magnitude);
+        
         if(direction != Vector3.zero)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + _camera.eulerAngles.y;
@@ -69,14 +72,15 @@ public class PlayerController : MonoBehaviour
 
             _controller.Move(moveDirection.normalized * playerSpeed * Time.deltaTime); 
         }
-
-        _animator.SetFloat("VelX", 0);
-        _animator.SetFloat("VelY", direction.magnitude);
+ 
     }
 
-    void AiMovement()
+    void AimMovement()
     {
         Vector3 direction = new Vector3(_horizontal, 0, _vertical);
+
+        _animator.SetFloat("VelX", _horizontal);
+        _animator.SetFloat("VelY", _vertical);
 
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + _camera.eulerAngles.y;
         float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, _camera.eulerAngles.y, ref turnSmoothVelocity, turnSmoothTime);
@@ -89,9 +93,6 @@ public class PlayerController : MonoBehaviour
 
             _controller.Move(moveDirection.normalized * playerSpeed * Time.deltaTime); 
         }
-
-        _animator.SetFloat("VelX", _horizontal);
-        _animator.SetFloat("VelY", _vertical);
     }
 
     void Jump()
