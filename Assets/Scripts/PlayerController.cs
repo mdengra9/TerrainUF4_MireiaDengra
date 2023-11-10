@@ -52,6 +52,9 @@ public class PlayerController : MonoBehaviour
         }
 
         Jump();
+        //_animator.SetBool("isJumping", !_isGrounded);
+
+    
     }
 
     void Movement()
@@ -59,7 +62,7 @@ public class PlayerController : MonoBehaviour
         Vector3 direction = new Vector3(_horizontal, 0, _vertical);
 
         _animator.SetFloat("VelX", 0);
-        _animator.SetFloat("VelY", direction.magnitude);
+        _animator.SetFloat("VelZ", direction.magnitude);
         
         if(direction != Vector3.zero)
         {
@@ -72,7 +75,6 @@ public class PlayerController : MonoBehaviour
 
             _controller.Move(moveDirection.normalized * playerSpeed * Time.deltaTime); 
         }
- 
     }
 
     void AimMovement()
@@ -80,7 +82,7 @@ public class PlayerController : MonoBehaviour
         Vector3 direction = new Vector3(_horizontal, 0, _vertical);
 
         _animator.SetFloat("VelX", _horizontal);
-        _animator.SetFloat("VelY", _vertical);
+        _animator.SetFloat("VelZ", _vertical);
 
         float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + _camera.eulerAngles.y;
         float smoothAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, _camera.eulerAngles.y, ref turnSmoothVelocity, turnSmoothTime);
@@ -102,14 +104,24 @@ public class PlayerController : MonoBehaviour
         if(_isGrounded && _playerGravity.y < 0)
         {
             _playerGravity.y = -2;
+            _animator.SetBool("IsJumping", false);
         }
 
         if(_isGrounded && Input.GetButtonDown("Jump"))
         {
             _playerGravity.y = Mathf.Sqrt(_jumpHeight * -2 * _gravity);
+            _animator.SetBool("IsJumping", true);
         }
 
         _playerGravity.y += _gravity * Time.deltaTime;
         _controller.Move(_playerGravity * Time.deltaTime);
+    }
+
+    void OnTriggerEnter (Collider other)
+    {
+         if (other.gameObject.layer == 7)
+         {
+        _animator.SetBool("IsDeath", true);
+         }
     }
 }
