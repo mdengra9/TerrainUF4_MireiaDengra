@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     //variables para velocidad, salto y gravedad
     [SerializeField] private float playerSpeed = 5;
     [SerializeField] private float _jumpHeight = 1;
-    private float _gravity = -9.81f; 
+    public float _gravity = -9.81f; 
     private Vector3 _playerGravity;
 
     //variables para rotación
@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     private bool _isGrounded;
 
     private Animator _animator;
+    private bool _death;
 
     // Start is called before the first frame update
     void Awake()
@@ -42,19 +43,22 @@ public class PlayerController : MonoBehaviour
         _horizontal = Input.GetAxisRaw("Horizontal");
         _vertical = Input.GetAxisRaw("Vertical");
 
-        if(Input.GetButton("Fire2"))
+        if(_death == false)
         {
-            AimMovement();
-        }
-        else
-        {
-            Movement();
-        }
+            if(Input.GetButton("Fire2"))
+            {
+                AimMovement();
+            }
+            else
+            {
+                Movement();
+            }
 
         Jump();
-        //_animator.SetBool("isJumping", !_isGrounded);
+        }
 
-    
+
+        //_animator.SetBool("isJumping", !_isGrounded);
     }
 
     void Movement()
@@ -119,9 +123,10 @@ public class PlayerController : MonoBehaviour
 
     void OnTriggerEnter (Collider other)
     {
-         if (other.gameObject.layer == 7)
-         {
-        _animator.SetBool("IsDeath", true);
-         }
+        if (other.gameObject.layer == 8)
+        {
+            _animator.SetBool("IsDeath", true);
+            _death = true;
+        }   
     }
 }
